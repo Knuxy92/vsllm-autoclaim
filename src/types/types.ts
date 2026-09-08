@@ -67,6 +67,7 @@ export interface ADTask {
   suspended: boolean;
   duration_sec: number;
   next_available_at: number;
+  daily_cap: number;
 }
 
 export interface CheckInResult {

@@ -92,7 +92,7 @@ export async function watchAD(user: UserContext) {
       return;
     }
 
-    if (adTask.done_count >= 3) {
+    if (adTask.done_count >= adTask.daily_cap) {
       log(user, "ad task completed, skipping");
       return;
     }
