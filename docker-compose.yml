@@ -1,0 +1,11 @@
+services:
+  autoclaim:
+    build: .
+    image: vsllm-autoclaim
+    container_name: vsllm-autoclaim
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Bangkok
+    volumes:
+      # secret.json is read from the host at startup — edit it and restart the container to apply
+      - ./secrets:/app/secrets:ro

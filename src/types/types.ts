@@ -8,6 +8,7 @@ export type QuizTaskStatus = "pending" | "completed" | (string & {});
 
 export interface QuizTask {
   status: QuizTaskStatus;
+  suspended: boolean;
 }
 
 export interface GwentStatus {
@@ -18,6 +19,7 @@ export interface GwentStatus {
   cooldown_seconds: number;
   tasks?: {
     task3?: QuizTask;
+    task2?: ADTask;
   };
 }
 
@@ -34,11 +36,37 @@ export interface QuizAnswer {
   correct: boolean;
 }
 
+export interface SubscriptionStatus {
+  subscriptions: {
+    subscription: {
+      id: number;
+      plan_id: number;
+      status: string;
+      source: string;
+      start_time: number;
+      end_time: number;
+      last_reset_time: number;
+      next_reset_time: number;
+      upgrade_group: string;
+      consume_priority: number;
+      used_percent: number;
+      unlimited: boolean;
+    };
+  }[];
+}
+
 export interface CheckInStatus {
   daily_completed: boolean;
   stats: {
     checked_in_today: boolean;
   };
+}
+
+export interface ADTask {
+  done_count: number;
+  suspended: boolean;
+  duration_sec: number;
+  next_available_at: number;
 }
 
 export interface CheckInResult {

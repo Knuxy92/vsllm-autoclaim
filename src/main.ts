@@ -1,15 +1,26 @@
-import { checkIn, drawAll, getUserdata, quizDaily } from "./api/api.js";
+import {
+  checkIn,
+  drawAll,
+  getUserdata,
+  quizDaily,
+  subscription,
+  watchAD,
+} from "./api/api.js";
 import { QUOTA_PER_CREDIT } from "./config.js";
 import { SecretEntry, TypedSecret, UserContext } from "./types/types.js";
 import secret from "../secrets/secret.json" with { type: "json" };
 
 const Secret: TypedSecret = secret;
 
-interface AccountResult {
+export interface AccountResult {
   displayName: string;
   ok: boolean;
   error?: string;
 }
+
+const sleep = (ms: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
 
 function toUserContext(entry: SecretEntry): UserContext {
   return {
@@ -21,8 +32,10 @@ function toUserContext(entry: SecretEntry): UserContext {
 
 async function claimForAccount(user: UserContext): Promise<void> {
   await quizDaily(user);
+  await watchAD(user);
   await drawAll(user);
-  await checkIn(user);
+  // await checkIn(user);
+  await subscription(user);
 
   const userdata = await getUserdata(user);
   if (!userdata.data) {
@@ -35,7 +48,15 @@ async function claimForAccount(user: UserContext): Promise<void> {
   console.log(`[${user.displayName}] Credit: ${credit}`);
 }
 
-async function runAccount(
+function getTime(): string {
+  const now = new Date(Date.now());
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+  return `${hours}:${minutes}:${seconds}`;
+}
+
+export async function runAccount(
   key: string,
   entry: SecretEntry,
 ): Promise<AccountResult> {
@@ -44,6 +65,7 @@ async function runAccount(
 
   try {
     await claimForAccount(user);
+    console.log(`\n`);
     return { displayName: user.displayName, ok: true };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
@@ -66,8 +88,12 @@ function printSummary(results: AccountResult[]): void {
   );
 }
 
-const results: AccountResult[] = [];
-for (const [key, entry] of Object.entries(Secret)) {
-  results.push(await runAccount(key, entry));
+while (true) {
+  const results: AccountResult[] = [];
+  for (const [key, entry] of Object.entries(Secret)) {
+    results.push(await runAccount(key, entry));
+  }
+  printSummary(results);
+  console.log(`At [${getTime()}]`);
+  await sleep(10 * 60 * 1000);
 }
-printSummary(results);

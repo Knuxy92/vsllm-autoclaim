@@ -1,0 +1,100 @@
+[pavarut] starting (12595)
+[pavarut] quiz already completed today
+[pavarut] ad task not available, skipping
+[pavarut] drawn prize | (+10000 quota) [common]
+[pavarut] no subscriptions found
+[pavarut] Credit: 15.929
+
+
+[best 0080] starting (14007)
+[best 0080] quiz already completed today
+[best 0080] ad task not available, skipping
+[best 0080] drawn prize | (+0 quota) [common]
+[best 0080] no subscriptions found
+[best 0080] Credit: 11.322
+
+
+[best00801-commits] starting (14008)
+[best00801-commits] quiz already completed today
+[best00801-commits] no charges left, next in 2h 0m
+[best00801-commits] no subscriptions found
+[best00801-commits] Credit: 7.458
+
+
+[WTFHUBPremium] starting (14095)
+[WTFHUBPremium] quiz already completed today
+[WTFHUBPremium] no charges left, next in 2h 0m
+[WTFHUBPremium] no subscriptions found
+[WTFHUBPremium] Credit: 12.65
+
+
+[jksioo603] starting (14651)
+[jksioo603] quiz already completed today
+[jksioo603] no charges left, next in 2h 0m
+[jksioo603] no subscriptions found
+[jksioo603] Credit: 14.199562
+
+
+[j6007804] starting (14652)
+[j6007804] quiz already completed today
+[j6007804] drawn prize | (+0 quota) [common]
+[j6007804] drawn prize | (+100000 quota) [rare]
+[j6007804] no subscriptions found
+[best00801-commits] ad task completed
+[j6007804] Credit: 12.352
+
+
+[Pavarut] starting (14762)
+[Pavarut] quiz already completed today
+[Pavarut] drawn prize | (+1000 quota) [common]
+[Pavarut] drawn prize | (+1000 quota) [common]
+[Pavarut] no subscriptions found
+[Pavarut] Credit: 8.648
+
+
+[Jksioo] starting (14773)
+[Jksioo] quiz already completed today
+[WTFHUBPremium] ad task completed
+[Jksioo] drawn prize | (+1000 quota) [common]
+[jksioo603] ad task completed
+[Jksioo] drawn prize | (+500000 quota) [epic]
+[Jksioo] no subscriptions found
+[Jksioo] Credit: 12.282
+
+
+[Jukool221] starting (14774)
+[Jukool221] quiz already completed today
+[j6007804] ad task completed
+[Jukool221] drawn prize | (+0 quota) [common]
+[Jukool221] drawn prize | (+1000 quota) [common]
+[Jukool221] no subscriptions found
+[Jukool221] Credit: 10.938
+
+
+[Pavarut] starting (14783)
+[Pavarut] quiz already completed today
+[Pavarut] drawn prize | (+1000 quota) [common]
+[Pavarut] drawn prize | (+0 quota) [common]
+[Pavarut] ad task completed
+[Pavarut] no subscriptions found
+[Pavarut] Credit: 13.2194
+
+
+
+=== Run summary ===
+[pavarut] OK
+[best 0080] OK
+[best00801-commits] OK
+[WTFHUBPremium] OK
+[jksioo603] OK
+[j6007804] OK
+[Pavarut] OK
+[Jksioo] OK
+[Jukool221] OK
+[Pavarut] OK
+
+Succeeded: 10, Failed: 0
+At [14:19:45]
+[Jksioo] ad task completed
+[Jukool221] ad task completed
+[Pavarut] ad task completed

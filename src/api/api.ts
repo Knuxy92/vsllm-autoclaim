@@ -9,6 +9,8 @@ import {
   QuizResult,
   UserData,
   UserContext,
+  SubscriptionStatus,
+  ADTask,
 } from "../types/types.js";
 
 const sleep = (ms: number): Promise<void> => {
@@ -43,11 +45,9 @@ function currentMonth(): string {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 }
 
-function assertSuccess<T>(
-  res: ApiRes<T>,
-  fallbackMessage: string,
-): T {
-  if (!res.success || !res.data) throw new Error(res.message ?? fallbackMessage);
+function assertSuccess<T>(res: ApiRes<T>, fallbackMessage: string): T {
+  if (!res.success || !res.data)
+    throw new Error(res.message ?? fallbackMessage);
   return res.data;
 }
 
@@ -71,6 +71,77 @@ export async function getUserdata(
   user: UserContext,
 ): Promise<ApiRes<UserData>> {
   return api<UserData>(user, `${BASE_URL}/api/user/self`);
+}
+
+export async function watchAD(user: UserContext) {
+  const status = assertSuccess(
+    await api<GwentStatus>(user, `${BASE_URL}/api/gwent/status`),
+    "Failed to get gwent status",
+  );
+
+  if (status.tasks?.task2) {
+    const adTask = status.tasks.task2;
+
+    if (adTask.suspended) {
+      log(user, "ad task suspended, skipping");
+      return;
+    }
+
+    if (adTask.next_available_at !== 0) {
+      log(user, "ad task not available, skipping");
+      return;
+    }
+
+    if (adTask.done_count >= 3) {
+      log(user, "ad task completed, skipping");
+      return;
+    }
+  } else {
+    log(user, "ad task not available, skipping");
+    return;
+  }
+
+  const starttask = assertSuccess(
+    await api<ADTask>(user, `${BASE_URL}/api/gwent/ad/start`, {
+      method: "POST",
+    }),
+    "Failed to start ad",
+  );
+
+  setTimeout(
+    async function () {
+      try {
+        assertSuccess(
+          await api<ADTask>(user, `${BASE_URL}/api/gwent/ad/claim`, {
+            method: "POST",
+          }),
+          "Failed to claim ad",
+        );
+      } catch (e: any) {
+        log(user, "failed to claim ad", e);
+      }
+      log(user, "ad task completed");
+    },
+    (starttask.duration_sec + 1) * 1000,
+  );
+}
+
+export async function subscription(user: UserContext) {
+  const res = assertSuccess(
+    await api<SubscriptionStatus>(user, `${BASE_URL}/api/subscription/self`),
+    "Failed to get subscription status",
+  );
+
+  if (res.subscriptions.length === 0) {
+    log(user, "no subscriptions found");
+    return;
+  }
+  for (const { subscription } of res.subscriptions) {
+    log(
+      user,
+      `subscription '${subscription.id}' using ${subscription.used_percent}% ( ${subscription.status} )`,
+    );
+  }
 }
 
 export async function checkIn(user: UserContext) {
@@ -114,14 +185,20 @@ export async function quizDaily(user: UserContext) {
     "Failed to get gwent status",
   );
 
-  const quizTask = status.tasks?.task3;
-  if (!quizTask) {
-    log(user, "quiz task not available, skipping");
-    return;
-  }
+  if (status.tasks?.task3) {
+    const quizTask = status.tasks?.task3;
 
-  if (quizTask.status !== "pending") {
-    log(user, "quiz already completed today");
+    if (quizTask.suspended) {
+      log(user, "ad task suspended, skipping");
+      return;
+    }
+
+    if (quizTask.status !== "pending") {
+      log(user, "quiz already completed today");
+      return;
+    }
+  } else {
+    log(user, "quiz task not available, skipping");
     return;
   }
 
@@ -132,8 +209,7 @@ export async function quizDaily(user: UserContext) {
     "Failed to start quiz",
   );
 
-  const fallbackAnswerIndex = 1;
-  const answerIndex = QUIZ_ANSWERS[quiz.question.text] ?? fallbackAnswerIndex;
+  const answerIndex = QUIZ_ANSWERS[quiz.question.text] ?? 1;
 
   const answer = assertSuccess(
     await api<QuizAnswer>(user, `${BASE_URL}/api/gwent/task3/answer`, {
@@ -156,10 +232,11 @@ export async function drawAll(user: UserContext) {
   );
 
   const { charges_current, next_available_at } = status;
-  if (typeof charges_current !== "number" || typeof next_available_at !== "number") {
-    throw new Error(
-      `unexpected gwent status shape: ${JSON.stringify(status)}`,
-    );
+  if (
+    typeof charges_current !== "number" ||
+    typeof next_available_at !== "number"
+  ) {
+    throw new Error(`unexpected gwent status shape: ${JSON.stringify(status)}`);
   }
 
   if (charges_current <= 0) {
